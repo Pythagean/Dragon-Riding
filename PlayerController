@@ -6,7 +6,9 @@ public class PlayerController : MonoBehaviour {
 	public KeyCode Left = KeyCode.LeftArrow;
 	public KeyCode Right = KeyCode.RightArrow;
 	public KeyCode Jump = KeyCode.Space;
-
+	
+	public float healthBar = 100f;
+	public float staminaBar = 100f;
 
 	public float gravity = -15f;
 	public float runSpeed = 8f;
@@ -45,30 +47,16 @@ public class PlayerController : MonoBehaviour {
 			velocity.x = -runSpeed;
 			//goLeft();
 		}
-		if(_controller.isGrounded)
+
+		if(velocity.x < 0.001 && velocity.x > -0.001)
 		{
-			if(velocity.x < 0.001 && velocity.x > -0.001)
-			{
-				velocity.x = 0;
-			}
-			else
-			{
-				velocity.x *= decaySpeed;
-			}
+			velocity.x = 0;
 		}
 		else
 		{
-			if(velocity.x < 0.001 && velocity.x > -0.001)
-			{
-				velocity.x = 0;
-			}
-			else
-			{
-				velocity.x *= decaySpeed;
-			}
+			velocity.x *= decaySpeed;
 		}
-	
-
+		
 		if (Input.GetKeyDown (Jump) && _controller.isGrounded) 
 		{
 			var targetJumpHeight = jumpHeight;
