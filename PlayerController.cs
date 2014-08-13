@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
@@ -6,9 +6,7 @@ public class PlayerController : MonoBehaviour {
 	public KeyCode Left = KeyCode.LeftArrow;
 	public KeyCode Right = KeyCode.RightArrow;
 	public KeyCode Jump = KeyCode.Space;
-	
-	public float healthBar = 100f;
-	public float staminaBar = 100f;
+
 
 	public float gravity = -15f;
 	public float runSpeed = 8f;
@@ -47,16 +45,30 @@ public class PlayerController : MonoBehaviour {
 			velocity.x = -runSpeed;
 			//goLeft();
 		}
-
-		if(velocity.x < 0.001 && velocity.x > -0.001)
+		if(_controller.isGrounded)
 		{
-			velocity.x = 0;
+			if(velocity.x < 0.001 && velocity.x > -0.001)
+			{
+				velocity.x = 0;
+			}
+			else
+			{
+				velocity.x *= decaySpeed;
+			}
 		}
 		else
 		{
-			velocity.x *= decaySpeed;
+			if(velocity.x < 0.001 && velocity.x > -0.001)
+			{
+				velocity.x = 0;
+			}
+			else
+			{
+				velocity.x *= decaySpeed;
+			}
 		}
-		
+	
+
 		if (Input.GetKeyDown (Jump) && _controller.isGrounded) 
 		{
 			var targetJumpHeight = jumpHeight;

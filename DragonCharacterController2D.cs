@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 [RequireComponent( typeof( BoxCollider2D ), typeof( Rigidbody2D ) )]
-public class DragonController2D : MonoBehaviour
+public class DragonCharacterController2D : MonoBehaviour
 {
 	#region internal types
 
@@ -350,7 +350,7 @@ public class DragonController2D : MonoBehaviour
 		// scale is slightly less so that we don't get trigger messages when colliding with non-triggers
 		go.transform.localScale = transform.localScale * triggerHelperBoxColliderScale;
 		
-		go.AddComponent<CC2DTriggerHelper>().setParentDragonController( this );
+		//go.AddComponent<CC2DTriggerHelper>().setParentDragonController( this );
 		
 		var rb = go.AddComponent<Rigidbody2D>();
 		rb.mass = 0f;
@@ -546,7 +546,7 @@ public class DragonController2D : MonoBehaviour
 			
 			DrawRay( ray, rayDirection * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, mask );
-			_raycastHitTeam = Physics2D.Raycast( ray, rayDirection, rayDistance, maskTeam );
+			//_raycastHitTeam = Physics2D.Raycast( ray, rayDirection, rayDistance, maskTeam );
 
 			if( _raycastHit || _raycastHitTeam)
 			{
@@ -554,8 +554,8 @@ public class DragonController2D : MonoBehaviour
 				if(_raycastHit != null)
 					deltaMovement.y = _raycastHit.point.y - ray.y;
 
-				if(_raycastHitTeam != null)
-					deltaMovement.y = _raycastHitTeam.point.y - ray.y;
+				//if(_raycastHitTeam != null)
+				//	deltaMovement.y = _raycastHitTeam.point.y - ray.y;
 
 				rayDistance = Mathf.Abs( deltaMovement.y );
 				
@@ -574,8 +574,8 @@ public class DragonController2D : MonoBehaviour
 				if(_raycastHit != null)
 					_raycastHitsThisFrame.Add( _raycastHit );
 
-				if(_raycastHitTeam != null)
-					_raycastHitsThisFrame.Add( _raycastHitTeam );
+				//if(_raycastHitTeam != null)
+				//	_raycastHitsThisFrame.Add( _raycastHitTeam );
 				
 				// this is a hack to deal with the top of slopes. if we walk up a slope and reach the apex we can get in a situation
 				// where our ray gets a hit that is less then skinWidth causing us to be ungrounded the next frame due to residual velocity.

@@ -1,4 +1,4 @@
-#define DEBUG_CC2D_RAYS
+﻿#define DEBUG_CC2D_RAYS
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -447,12 +447,7 @@ public class CharacterController2D : MonoBehaviour
 				}
 				
 				// set our new deltaMovement and recalculate the rayDistance taking it into account
-				if(_raycastHit != null)
-					deltaMovement.x = _raycastHit.point.x - ray.x;
-
-				if(_raycastHitTeam != null)
-					deltaMovement.x = _raycastHitTeam.point.x - ray.x;
-
+				deltaMovement.x = _raycastHit.point.x - ray.x;
 				rayDistance = Mathf.Abs( deltaMovement.x );
 				
 				// remember to remove the skinWidth from our deltaMovement
@@ -467,11 +462,7 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.left = true;
 				}
 				
-				if(_raycastHit != null)
-					_raycastHitsThisFrame.Add( _raycastHit );
-
-				if(_raycastHitTeam != null)
-					_raycastHitsThisFrame.Add( _raycastHitTeam );
+				_raycastHitsThisFrame.Add( _raycastHit );
 				
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
@@ -551,12 +542,7 @@ public class CharacterController2D : MonoBehaviour
 			if( _raycastHit || _raycastHitTeam)
 			{
 				// set our new deltaMovement and recalculate the rayDistance taking it into account
-				if(_raycastHit != null)
-					deltaMovement.y = _raycastHit.point.y - ray.y;
-
-				if(_raycastHitTeam != null)
-					deltaMovement.y = _raycastHitTeam.point.y - ray.y;
-
+				deltaMovement.y = _raycastHit.point.y - ray.y;
 				rayDistance = Mathf.Abs( deltaMovement.y );
 				
 				// remember to remove the skinWidth from our deltaMovement
@@ -571,11 +557,11 @@ public class CharacterController2D : MonoBehaviour
 					collisionState.below = true;
 				}
 
-				if(_raycastHit != null)
-					_raycastHitsThisFrame.Add( _raycastHit );
-
-				if(_raycastHitTeam != null)
+				if(_raycastHit == null)
 					_raycastHitsThisFrame.Add( _raycastHitTeam );
+
+				if(_raycastHitTeam == null)
+					_raycastHitsThisFrame.Add( _raycastHit );
 				
 				// this is a hack to deal with the top of slopes. if we walk up a slope and reach the apex we can get in a situation
 				// where our ray gets a hit that is less then skinWidth causing us to be ungrounded the next frame due to residual velocity.
