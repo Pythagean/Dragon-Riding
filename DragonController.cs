@@ -15,6 +15,9 @@ public class DragonController : MonoBehaviour {
 	public float staminaBar = 100f;
 	public float fireBar = 100f;
 
+	private float currentHealth;
+	private float currentStamina;
+	private float currentFire;
 
 	//Rate at which stats regenerate
 	public float healthRegen = 5f;
@@ -49,6 +52,10 @@ public class DragonController : MonoBehaviour {
 		_controller = GetComponent<DragonCharacterController2D> ();
 		_animator = GetComponent<Animator> ();
 
+		currentHealth = healthBar;
+		currentStamina = staminaBar;
+		currentFire = fireBar;
+
 	}
 
 	void Update()
@@ -56,9 +63,7 @@ public class DragonController : MonoBehaviour {
 		//Grabs current velocity of Dragon
 		var velocity = _controller.velocity;
 
-		float currentHealth = healthBar;
-		float currentStamina = staminaBar;
-		float currentFire = fireBar;
+
 		//var stamina = staminaBar;
 
 		//Sets velocity.y to 0 and regenerates stamina when on ground
@@ -122,25 +127,21 @@ public class DragonController : MonoBehaviour {
 		//Apply gravity to y velocity
 		velocity.y += gravity * Time.deltaTime;
 
-		//OnGUI(currentHealth);
+		OnGUI();
 
 
 		//Move dragon using the DragonCharacterController2D Script
 		_controller.move(velocity * Time.deltaTime);
 	}
 
-	//void onGUI()
-	//{
-	//	GUI.Label(Rect(0,0,100,100),"Health: " + currentHealth.ToString() + " / " + healthBar.ToString());
-	//	GUI.Label(Rect(0,0,100,100),"Stamina: " + currentStamina.ToString() + " / " + staminaBar.ToString());
-	//	GUI.Label(Rect(0,0,100,100),"Fire: " + currentFire.ToString() + " / " + fireBar.ToString());
-	//	GUI.Label(Rect(0,0,100,100),"Is Grounded: " + _controller.isGrounded.ToString());
-	//	GUI.Label(Rect(0,0,100,100),"Is Gliding: " + isGliding.ToString());
-	//}
-
-	//void OnGUI(float currentHealth) {
-	//	GUI.Label(new Rect(10, 10, 100, 20), "Health: " + " / " + healthBar.ToString());
-	//}
+	void OnGUI() {
+		GUI.Label (new Rect (10, 10, 100, 20), "Dragon");
+		GUI.Label(new Rect(10, 30, 150, 20), "Health: " + currentHealth + " / " + healthBar.ToString());
+		GUI.Label(new Rect(10, 50, 150, 20), "Stamina: " + currentStamina + " / " + staminaBar.ToString());
+		GUI.Label(new Rect(10, 70, 150, 20), "Fire: " + currentFire + " / " + fireBar.ToString());
+		GUI.Label(new Rect(10, 90, 150, 20), "Is Grounded: " + _controller.isGrounded.ToString());
+		GUI.Label(new Rect(10, 110, 150, 20), "Is Gliding: " + isGliding);
+	}
 
 	private void goLeft()
 	{
