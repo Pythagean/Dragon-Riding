@@ -21,7 +21,7 @@ public class DragonController : MonoBehaviour {
 
 	//Rate at which stats regenerate
 	public float healthRegen = 5f;
-	public float staminaRegen = 10f;
+	public float staminaRegen = 30f;
 	public float fireRegen = 10f;
 
 	//Amount of stamina used by each activity
@@ -35,11 +35,11 @@ public class DragonController : MonoBehaviour {
 
 	//Global variables for movement
 	public float gravity = -15f;
-	public float runSpeed = 5f;
+	public float runSpeed = 6f;
 	public float decaySpeed = 0.5f;
 	public float jumpHeight = 2.5f;
 	public float flapHeight = 1.5f;
-	public float glidingSpeed = 5f;
+	public float glidingSpeed = 100f;
 
 	private DragonCharacterController2D _controller;
 	private Animator _animator;
@@ -70,10 +70,11 @@ public class DragonController : MonoBehaviour {
 		if (_controller.isGrounded)
 		{
 			velocity.y = 0;
+			isGliding = false;
 			if(currentStamina > staminaBar - 1)
 				currentStamina = staminaBar;
 			else
-				currentStamina += currentStamina * Time.deltaTime;
+				currentStamina += staminaRegen * Time.deltaTime;
 		}
 
 		//Horizontal Input
@@ -108,20 +109,30 @@ public class DragonController : MonoBehaviour {
 			var targetFlapHeight = flapHeight;
 			velocity.y = Mathf.Sqrt(2f * targetFlapHeight * -gravity);
 			currentStamina -= staminaUsageFlap;
+			isGliding = false;
 		}
 
 		//Initiate glide when in the air
 		if(Input.GetKeyDown(Glide) && !_controller.isGrounded && currentStamina > staminaUsageGlide)
 		{
-			velocity.y += glidingSpeed * Time.deltaTime;
+			isGliding = true;
 			currentStamina -= staminaUsageGlide;
 			//Debug.Log("Glide!");
 		}
 
-		//Initiate freefall from glide
-		if(Input.GetKeyDown(FreeFall) && !_controller.isGrounded && !isGliding)
+		if (isGliding) 
 		{
-			velocity.y -= glidingSpeed * Time.deltaTime;
+			if(velocity.y < -1)
+				velocity.y += glidingSpeed * Time.deltaTime;
+		}
+
+
+
+		//Initiate freefall from glide
+		if(Input.GetKeyDown(FreeFall) && !_controller.isGrounded && isGliding)
+		{
+			velocity.y += glidingSpeed * Time.deltaTime;
+			isGliding = false;
 		}
 
 		//Apply gravity to y velocity
@@ -141,6 +152,8 @@ public class DragonController : MonoBehaviour {
 		GUI.Label(new Rect(10, 70, 150, 20), "Fire: " + currentFire + " / " + fireBar.ToString());
 		GUI.Label(new Rect(10, 90, 150, 20), "Is Grounded: " + _controller.isGrounded.ToString());
 		GUI.Label(new Rect(10, 110, 150, 20), "Is Gliding: " + isGliding);
+		//GUI.Label(new Rect(10, 130, 150, 20), "X Velocity: " + _controller.velocity.x);
+		//GUI.Label(new Rect(10, 150, 150, 20), "Y Velocity: " + _controller.velocity.y);
 	}
 
 	private void goLeft()
