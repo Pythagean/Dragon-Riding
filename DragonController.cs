@@ -15,6 +15,7 @@ public class DragonController : MonoBehaviour {
 	public float staminaBar = 100f;
 	public float fireBar = 100f;
 
+	//Current stat values
 	private float currentHealth;
 	private float currentStamina;
 	private float currentFire;
@@ -25,46 +26,50 @@ public class DragonController : MonoBehaviour {
 	public float fireRegen = 10f;
 
 	//Amount of stamina used by each activity
-	public float staminaUsageJump = 10f;
-	public float staminaUsageFlap = 5f;
-	public float staminaUsageGlide = 2f;
+	private float staminaUsageJump = 15f;
+	private float staminaUsageFlap = 10f;
+	private float staminaUsageGlide = 2f;
 
 	//Amount of fire used by each activity
-	public float fireUsageFireball = 10f;
-	public float fireUsageFlamethrower = 20f;
+	private float fireUsageFireball = 10f;
+	private float fireUsageFlamethrower = 20f;
 
 	//Global variables for movement
 	public float gravity = -15f;
 	public float runSpeed = 6f;
-	public float decaySpeed = 0.5f;
 	public float jumpHeight = 2.5f;
 	public float flapHeight = 1.5f;
-	public float glidingSpeed = 100f;
+	public float glidingSpeed = 16f;
+	private float decaySpeed = 0.5f;
+	private float fallingPickupSpeed = 0.5f;
+	private float maxXSpeed = 10f;
 
 	private DragonCharacterController2D _controller;
-	private Animator _animator;
+	//private Animator _animator;
 
 	//Boolean values storing current state of dragon
 	private bool isGliding;
+	private bool facingRight;
 
+	//Method called when script is being loaded
 	void Awake()
 	{
 		_controller = GetComponent<DragonCharacterController2D> ();
-		_animator = GetComponent<Animator> ();
+		//_animator = GetComponent<Animator> ();
 
 		currentHealth = healthBar;
 		currentStamina = staminaBar;
 		currentFire = fireBar;
 
+		facingRight = true;
+		isGliding = false;
 	}
 
+	//Method called every frame
 	void Update()
 	{
 		//Grabs current velocity of Dragon
 		var velocity = _controller.velocity;
-
-
-		//var stamina = staminaBar;
 
 		//Sets velocity.y to 0 and regenerates stamina when on ground
 		if (_controller.isGrounded)
@@ -81,12 +86,14 @@ public class DragonController : MonoBehaviour {
 		if (Input.GetKey (Right)) 
 		{
 			velocity.x = runSpeed;
-			//goRight();
+			facingRight = true;
+			goRight();
 		}
 		else if( Input.GetKey(Left))
 		{
 			velocity.x = -runSpeed;
-			//goLeft();
+			facingRight = false;
+			goLeft();
 		}
 
 		//Adds decay speed to the x velocity to slow dragon down
@@ -117,22 +124,38 @@ public class DragonController : MonoBehaviour {
 		{
 			isGliding = true;
 			currentStamina -= staminaUsageGlide;
-			//Debug.Log("Glide!");
 		}
-
-		if (isGliding) 
-		{
-			if(velocity.y < -1)
-				velocity.y += glidingSpeed * Time.deltaTime;
-		}
-
-
 
 		//Initiate freefall from glide
 		if(Input.GetKeyDown(FreeFall) && !_controller.isGrounded && isGliding)
 		{
-			velocity.y += glidingSpeed * Time.deltaTime;
 			isGliding = false;
+		}
+
+		//If the dragon is gliding then reduce fall speed by adding on upward y velocity
+		if (isGliding) 
+		{
+			currentStamina -= staminaUsageGlide * Time.deltaTime;
+			if(velocity.y < -1)
+				velocity.y += glidingSpeed * Time.deltaTime;
+		}
+
+		//If Dragon is in the air but not gliding, 
+		//Increase x velocity in direction facing up to maximum x speed
+		if(!isGliding && !_controller.isGrounded && !Input.GetKeyDown(FreeFall))
+		{
+			if(facingRight && velocity.x < maxXSpeed)
+			{
+				velocity.x += fallingPickupSpeed * Time.deltaTime;
+				if(velocity.x > maxXSpeed)
+					velocity.x = maxXSpeed;
+			}
+			else if(!facingRight && velocity.x > -maxXSpeed)
+			{
+				velocity.x -= fallingPickupSpeed * Time.deltaTime;
+				if(velocity.x < -maxXSpeed)
+					velocity.x = -maxXSpeed;
+			}
 		}
 
 		//Apply gravity to y velocity
@@ -140,18 +163,26 @@ public class DragonController : MonoBehaviour {
 
 		OnGUI();
 
-
 		//Move dragon using the DragonCharacterController2D Script
 		_controller.move(velocity * Time.deltaTime);
 	}
 
-	void OnGUI() {
-		GUI.Label (new Rect (10, 10, 100, 20), "Dragon");
+	void OnGUI() 
+	{
+		GUI.Label(new Rect(20, 10, 100, 20), "Dragon");
+
+		GUI.skin.label.normal.textColor = Color.Blue;
 		GUI.Label(new Rect(10, 30, 150, 20), "Health: " + currentHealth + " / " + healthBar.ToString());
+
+		GUI.skin.label.normal.textColor = Color.Greem;
 		GUI.Label(new Rect(10, 50, 150, 20), "Stamina: " + currentStamina + " / " + staminaBar.ToString());
+
+		GUI.skin.label.normal.textColor = Color.Red;
 		GUI.Label(new Rect(10, 70, 150, 20), "Fire: " + currentFire + " / " + fireBar.ToString());
+
 		GUI.Label(new Rect(10, 90, 150, 20), "Is Grounded: " + _controller.isGrounded.ToString());
 		GUI.Label(new Rect(10, 110, 150, 20), "Is Gliding: " + isGliding);
+		GUI.Label(new Rect(10, 130, 150, 20), "Facing Right: " + facingRight);
 		//GUI.Label(new Rect(10, 130, 150, 20), "X Velocity: " + _controller.velocity.x);
 		//GUI.Label(new Rect(10, 150, 150, 20), "Y Velocity: " + _controller.velocity.y);
 	}
