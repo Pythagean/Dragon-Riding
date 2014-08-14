@@ -8,7 +8,7 @@ using System.Collections.Generic;
 public class DragonCharacterController2D : MonoBehaviour
 {
 	#region internal types
-
+	
 	private struct DragonRaycastOrigins
 	{
 		public Vector3 topRight;
@@ -261,7 +261,7 @@ public class DragonCharacterController2D : MonoBehaviour
 		// now we check movement in the horizontal dir
 		//if (deltaMovement.x != 0 && deltaMovement.y > 0)
 		//				Debug.Log ("X: " + deltaMovement.x + "Y: " + deltaMovement.y);
-
+		
 		if( deltaMovement.x != 0 )
 			moveHorizontally( ref deltaMovement );
 		
@@ -419,19 +419,19 @@ public class DragonCharacterController2D : MonoBehaviour
 			var ray = new Vector2( initialRayOrigin.x, initialRayOrigin.y + i * _verticalDistanceBetweenRays );
 			
 			DrawRay( ray, rayDirection * rayDistance, Color.red );
-
+			
 			// if we are grounded we will include oneWayPlatforms only on the first ray (the bottom one). this will allow us to
 			// walk up sloped oneWayPlatforms
 			if( i == 0 && collisionState.wasGroundedLastFrame )
 			{
 				_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, platformMask );
 				_raycastHitTeam = Physics2D.Raycast( ray, rayDirection, rayDistance, platformTeamMask );
-
+				
 			}
-				else{
+			else{
 				_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, platformMask & ~oneWayPlatformMask );
 				_raycastHitTeam = Physics2D.Raycast( ray, rayDirection, rayDistance, platformTeamMask & ~oneWayPlatformMask );
-
+				
 			}
 			if(_raycastHitTeam)
 			{
@@ -449,7 +449,7 @@ public class DragonCharacterController2D : MonoBehaviour
 				// set our new deltaMovement and recalculate the rayDistance taking it into account
 				if(_raycastHit != null)
 					deltaMovement.x = _raycastHit.point.x - ray.x;
-
+				
 				rayDistance = Mathf.Abs( deltaMovement.x );
 				
 				// remember to remove the skinWidth from our deltaMovement
@@ -466,7 +466,7 @@ public class DragonCharacterController2D : MonoBehaviour
 				
 				if(_raycastHit != null)
 					_raycastHitsThisFrame.Add( _raycastHit );
-			
+				
 				// we add a small fudge factor for the float operations here. if our rayDistance is smaller
 				// than the width + fudge bail out because we have a direct impact
 				if( rayDistance < _skinWidth + kSkinWidthFloatFudgeFactor )
@@ -541,7 +541,7 @@ public class DragonCharacterController2D : MonoBehaviour
 			DrawRay( ray, rayDirection * rayDistance, Color.red );
 			_raycastHit = Physics2D.Raycast( ray, rayDirection, rayDistance, mask );
 			_raycastHitTeam = Physics2D.Raycast( ray, rayDirection, rayDistance, maskTeam );
-
+			
 			if(_raycastHitTeam)
 			{
 				Debug.Log("Player and Dragon collide");
@@ -552,7 +552,7 @@ public class DragonCharacterController2D : MonoBehaviour
 				// set our new deltaMovement and recalculate the rayDistance taking it into account
 				if(_raycastHit != null)
 					deltaMovement.y = _raycastHit.point.y - ray.y;
-
+				
 				rayDistance = Mathf.Abs( deltaMovement.y );
 				
 				// remember to remove the skinWidth from our deltaMovement
@@ -566,10 +566,10 @@ public class DragonCharacterController2D : MonoBehaviour
 					deltaMovement.y += _skinWidth;
 					collisionState.below = true;
 				}
-
+				
 				if(_raycastHit != null)
 					_raycastHitsThisFrame.Add( _raycastHit );
-		
+				
 				// this is a hack to deal with the top of slopes. if we walk up a slope and reach the apex we can get in a situation
 				// where our ray gets a hit that is less then skinWidth causing us to be ungrounded the next frame due to residual velocity.
 				if( !isGoingUp && deltaMovement.y > 0.00001f )
